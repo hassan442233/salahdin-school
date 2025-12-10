@@ -177,8 +177,8 @@
     <audio id="sound-clapping" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
 
     <script>
-        // إعدادات الأسئلة (تم التأكد من بقائها كاملة)
-        let questionBank = [
+        // إعدادات الأسئلة
+let questionBank = [
             { text: "تطير الطيور الصغيرة فور خروجها من البيض.", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
             { text: "ما أفضل تصرف إذا اختلفت مع زميلك", type: "mcq", options: ["اضربه", "اصرخ في وجهه", "احاول التفاهم معه"], correctIndex: 2 },
             { text: "أي مهنة تحتاج إلى معرفة كبيرة بالحاسب الآلي", type: "mcq", options: ["الفلاح", "مهندس تكنولوجيا معلومات", "عامل البناء"], correctIndex: 1 },
@@ -206,7 +206,7 @@
             { text: "ماذا يحدث لصغار الطيور بعد خروجها من البيض", type: "mcq", options: ["تطير فورًا", "  تبقى في العش وترعاها الأم", " تذهب وحدها للبحث عن الطعام "], correctIndex: 1 },
             { text: "ما هي وظيفة أم نور في الفندق", type: "mcq", options: ["موظفة استقبال", "  عاملة نظافة", "مرشدة سياحية  "], correctIndex: 0 } 
         ];
-        questionBank = questionBank.map(q => ({...q, errorCount: 0}));
+                questionBank = questionBank.map(q => ({...q, errorCount: 0}));
 
         let questionQueue = [...questionBank]; 
         let totalQuestionsCount = questionBank.length;
@@ -377,14 +377,7 @@
                 captionText += `🧑‍🎓 الاسم: ${studentName}\n`;
                 captionText += `📚 الفصل: ${studentClass}\n`;
                 captionText += `💯 الدرجة: ${totalQuestionsCount} / ${totalQuestionsCount} (اجتاز جميع الأسئلة)\n\n`;
-                
-                // إضافة ملخص الأخطاء في النص إن وجدت
-                const erroredQuestions = questionBank.filter(q => q.errorCount > 0);
-                if (erroredQuestions.length > 0) {
-                    captionText += `❌ ملاحظات: أخطأ الطالب ${erroredQuestions.length} مرات في الإجابة على بعض الأسئلة قبل إتقانها.`;
-                } else {
-                     captionText += `✅ ملاحظات: لم يرتكب الطالب أي خطأ.`;
-                }
+                captionText += `تفاصيل الأخطاء في الصورة المرفقة.`;
 
                 // إعداد FormData للإرسال إلى sendPhoto
                 formData.append('chat_id', CHAT_ID);
@@ -443,5 +436,4 @@
         window.onload = function() { document.getElementById('info-modal').style.display = 'flex'; };
     </script>
 </body>
-
 </html>
