@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مراجعة اكتشف - مدرسة صلاح الدين الإسلامية الخاصة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0288D1;
+            --secondary-color: #FFC107;
+            --success-color: #4CAF50;
+            --error-color: #FF5252;
+            --bg-color: #E1F5FE;
+            --card-bg: #ffffff;
+            --max-card-width: 800px;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* تنسيق النافذة المنبثقة */
+        .modal-overlay { position: fixed; top: 0; right: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 15px; max-width: 400px; width: 90%; text-align: right; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); border: 5px solid var(--primary-color); }
+        .modal-content h2 { color: var(--primary-color); margin-top: 0; font-size: 1.8rem; text-align: center; }
+        .modal-content label { display: block; margin-bottom: 8px; margin-top: 15px; font-weight: bold; color: #333; }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1.1rem; font-family: 'Tajawal', sans-serif; text-align: right; }
+        
+        .start-btn { background: var(--success-color); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-size: 1.2rem; font-weight: bold; width: 100%; transition: background 0.2s; }
+        .start-btn:hover { background: #388E3C; }
+
+        /* المحتوى الرئيسي */
+        #main-content { display: none; width: 100%; max-width: var(--max-card-width); flex-direction: column; align-items: center; flex-grow: 1; }
+        header { width: 100%; max-width: var(--max-card-width); display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 10px; box-sizing: border-box; }
+        .school-info h1 { font-size: 1.5rem; color: var(--primary-color); margin: 0; line-height: 1.4; font-weight: 900; }
+        .school-logo { height: 70px; border-radius: 10px; object-fit: contain; padding: 5px; }
+
+        .game-container { background: var(--card-bg); width: 100%; max-width: var(--max-card-width); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 25px; text-align: center; position: relative; border: 4px solid #fff; box-sizing: border-box; flex-grow: 1; display: flex; flex-direction: column; }
+        
+        .quiz-controls { display: flex; align-items: center; }
+        .mute-btn { background: #f1f1f1; border: 1px solid #ccc; padding: 8px 10px; border-radius: 50%; cursor: pointer; font-size: 1.6rem; color: #555; transition: all 0.2s; width: 40px; height: 40px; line-height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .mute-btn.muted { background: #ffcdd2; color: #c62828; border-color: #ef9a9a; }
+
+        .progress-section { display: flex; flex-direction: column; flex-grow: 1; margin-left: 40px; margin-right: 25px; margin-bottom: 10px; }
+        .progress-wrapper { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1rem; color: #555; margin-bottom: 5px; }
+        .progress-container { width: 100%; background-color: #eee; border-radius: 10px; height: 15px; overflow: hidden; border: 1px solid #ddd; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #FFEB3B, #FBC02D); transition: width 0.5s ease; border-radius: 10px; }
+
+        .speak-btn { background: #FF9800; border: none; border-radius: 50px; padding: 10px 25px; cursor: pointer; font-size: 1rem; font-family: 'Tajawal', sans-serif; font-weight: bold; color: white; box-shadow: 0 4px 0 #F57C00; margin-bottom: 10px; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 10px; }
+        .speak-btn:active { transform: translateY(3px); box-shadow: none; }
+        
+        .question-text { font-size: 1.6rem; color: #333; margin: 10px 0 20px 0; font-weight: 900; line-height: 1.5; }
+        .options-grid { display: grid; gap: 12px; width: 100%; }
+        .option-btn { background: #f8f9fa; border: 2px solid #e9ecef; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-family: 'Tajawal', sans-serif; font-weight: bold; cursor: pointer; transition: all 0.2s; color: #555; width: 100%; }
+        .option-btn:hover { background: #e1f5fe; border-color: var(--primary-color); }
+        .option-btn.correct { background-color: var(--success-color) !important; color: white !important; border-color: #388E3C !important; }
+        .option-btn.wrong { background-color: var(--error-color) !important; color: white !important; border-color: #D32F2F !important; }
+
+        .feedback-msg { margin-top: 15px; font-weight: bold; font-size: 1.1rem; min-height: 30px; }
+        .end-screen { display: none; text-align: center; overflow-y: auto; max-height: 80vh; }
+        .trophy { font-size: 5rem; margin-bottom: 15px; animation: bounce 2s infinite; }
+        #error-summary-list div { text-align: right; }
+
+        footer { width: 100%; max-width: var(--max-card-width); padding: 15px 0; margin-top: auto; text-align: center; }
+        .footer-section { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 15px; border: 4px solid #fff; }
+        .staff-grid { display: flex; gap: 15px; margin-bottom: 20px; justify-content: space-between; flex-wrap: nowrap; overflow-x: hidden; }
+        .staff-member { flex: 1 1 33.33%; min-width: 150px; padding: 10px; border-radius: 10px; background-color: var(--bg-color); border: 1px solid #CFD8DC; }
+        .staff-member p { margin: 0; line-height: 1.4; }
+        .staff-member .title { font-weight: 400; font-size: 0.9rem; color: #607D8B; }
+        .staff-member .name { font-weight: 700; color: var(--primary-color); font-size: 1.1rem; }
+        .media-dept { font-size: 1rem; color: #444; font-weight: 800; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--secondary-color); padding: 8px 20px; border-radius: 50px; display: inline-flex; }
+
+        @media (max-width: 650px) {
+            header { flex-direction: row; gap: 5px; padding: 5px 0; }
+            .school-logo { height: 35px; flex-shrink: 0; padding: 0; }
+            .school-info h1 { font-size: 1rem; line-height: 1.2; }
+            .question-text { font-size: 1.3rem; }
+            .option-btn { font-size: 1rem; padding: 12px; }
+            .game-container { padding: 15px; width: 100%; }
+            .staff-grid { gap: 5px; }
+            .staff-member { padding: 5px 2px; min-width: 0; }
+            .staff-member .title { font-size: 0.7rem; }
+            .staff-member .name { font-size: 0.7rem; line-height: 1.1; }
+            .media-dept { font-size: 0.8rem; padding: 5px 15px; }
+        }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+    </style>
+</head>
+<body>
+
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>أهلاً وسهلاً بك</h2>
+            <label for="student-name">الاسم:</label>
+            <input type="text" id="student-name" placeholder="أدخل اسم الطالب" required>
+            <label for="student-class">الفصل:</label>
+            <select id="student-class" required>
+                <option value="">اختر الفصل</option>
+                <option value="2 / 1 ب">2 / 1 ب</option>
+                <option value="2 / 2 ب">2 / 2 ب</option>
+            </select>
+            <button class="start-btn" onclick="submitInfo()">هيا نتعلم</button>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <header>
+            <div class="school-info">
+                <h1>الإعلام التربوي</h1>
+            </div>
+            <img src="logo.png" alt="شعار المدرسة" class="school-logo" onerror="this.style.display='none'">
+        </header>
+
+        <div class="game-container">
+            <div class="quiz-controls">
+                <button class="mute-btn" id="mute-toggle" onclick="toggleMute()" title="تشغيل/إيقاف الأصوات">🔊</button>
+                <div class="progress-section">
+                    <div class="progress-wrapper">
+                        <span id="score-current" style="color:var(--success-color)">0</span> 
+                        <span id="score-total" style="color:#888">0</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="quiz-view">
+                <button class="speak-btn" onclick="speakQuestion()">
+                    <span>🗣️</span> <span>اقرأ لي السؤال</span>
+                </button>
+                <div class="question-text" id="question-text">...</div>
+                <div class="options-grid" id="options-container"></div>
+                <div class="feedback-msg" id="feedback"></div>
+            </div>
+
+            <div id="end-view" class="end-screen">
+                <div class="trophy">🏆</div>
+                <h1 style="color: #4CAF50;">تهانينا! لقد تعلمت كل شيء</h1>
+                <p>أنت طالب متميز.</p>
+                
+                <div id="error-summary-container" style="margin-top: 30px; text-align: right; border-top: 2px solid #ddd; padding-top: 20px;">
+                    <h2 style="color: #D32F2F; text-align: center;">🚫 ملخص الأخطاء:</h2>
+                    <ul id="error-summary-list" style="list-style-type: none; padding: 0;"></ul>
+                </div>
+
+                <button class="option-btn" onclick="downloadReportImage()" style="background:#5C6BC0; color:white; margin-top:20px; margin-bottom: 10px;">
+                    📸 تحميل تقرير الأخطاء 
+                </button>
+                <button class="option-btn" onclick="location.reload()" style="background:#0288D1; color:white; margin-top:0;">إعادة التمرين</button>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-section">
+                <div class="staff-grid">
+                    <div class="staff-member"><p class="title">وكيل المدرسة</p><p class="name">أ/ فاطمة جمال</p></div>
+                    <div class="staff-member"><p class="title">وكيل المدرسة</p><p class="name">أ/ إيمان مصطفى</p></div>
+                    <div class="staff-member"><p class="title">مدير المدرسة</p><p class="name">أ/ بهاء الدين محمد</p></div>
+                </div>
+                <p class="media-dept">إعداد وتصميم أسرة الإعلام التربوي 📷</p>
+            </div>
+        </footer>
+    </div>
+
+    <audio id="sound-correct" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
+    <audio id="sound-wrong" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+    <audio id="sound-clapping" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
+
+    <script>
+        // إعدادات الأسئلة
+        let questionBank = [
+{ text: "تطير الطيور الصغيرة فور خروجها من البيض.", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
+            { text: "ما أفضل تصرف إذا اختلفت مع زميلك", type: "mcq", options: ["اضربه", "اصرخ في وجهه", "احاول التفاهم معه"], correctIndex: 2 },
+            { text: "أي مهنة تحتاج إلى معرفة كبيرة بالحاسب الآلي", type: "mcq", options: ["الفلاح", "مهندس تكنولوجيا معلومات", "عامل البناء"], correctIndex: 1 },
+            { text: "تريد نور لعب كرة القدم لمدة 30 دقيقة ثم قفز الحبل لمدة 5 دقائق ، فما عدد الدقائق التي تحتاجها نور للعب", type: "mcq", options: ["5", "35", " 30"], correctIndex: 1 },
+            { text: "لديك 60 دقيقة وقت فراغ تريد لعب 40 دقيقة فقط ، فما عدد الدقائق المتبقية من وقت فراغك", type: "mcq", options: ["10", "15", " 20"], correctIndex: 2 },
+            { text: "تختلف اصوات اناث الإوز المصري عن اصوات الذكور", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "يبلغ ارتفاع أطول جبل جليدي في العالم حوالي 55 طابق فوق الماء", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "يمكننا رؤية الماء في ثلاث حالات ( صلبة - سائلة - غازية )", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 }, 
+            { text: "ماذا اقترحت والدة نور لحل مشكلة التأخر في استخدام الحمام صباحا", type: "mcq", options: ["سمحت لهم بالتأخر عن المدرسة", "طلبت منهم ضبط المؤقت", "صرخت في سارة لانها تتأخر"], correctIndex: 1 },
+            { text: "يطلق علي .... صديق الفلاح ", type: "mcq", options: ["الهدهد", "ابو قردان", "الحمار"], correctIndex: 1 },
+            { text: "يجب غسل اليدين للحماية من الأمراض.", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "ماذا تستخدم البائعة في متجر الملابس ؟", type: "mcq", options: ["المطرقة", "الميكروسكوب", "آلة النقود"], correctIndex: 2 },
+            { text: "من أدوات تنظيف الخضروات", type: "mcq", options: ["الصابون", "الماء", "العطر"], correctIndex: 1 },
+            { text: "تعيش نور مع أمها وأبيها فقط", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
+            { text: "التعاون يعني أن يعمل كل فرد بمفرده دون مساعدة الآخرين", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
+            { text: "اذا وضعت كتابا صغيرا بالقرب من عينيك يمكنك ان تغطي به شجرة كبيرة جدا بعيدة عنك", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "قلة النوم تجعل الجسم أكثر صحة وقوة", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
+            { text: "ممارسة الرياضة تساعد على صحة الجسم والعقل", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "إهمال الطعام الصحي يسبب زيارة كثيرة للأطباء", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "عندما ترى طائرة تحلّق عالياً في السماء، تبدو لك صغيرة الحجم", type: "tf", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "والد نور يعمل مهندسًا في الكمبيوتر", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 }, 
+            { text: "صغار الطيور تعيش في", type: "mcq", options: ["الكهف", "  الحجر", "العش "], correctIndex: 2 },
+            { text: "ما هو عمل والد نور", type: "mcq", options: ["مهندس", "  طبيب", "عامل بناء "], correctIndex: 2 },
+            { text: "تعتبر مياه نهر النيل مياه ....", type: "mcq", options: ["خليط عذب ومالح", "  مالحة", "عذبة "], correctIndex: 2 },
+            { text: "ماذا يحدث لصغار الطيور بعد خروجها من البيض", type: "mcq", options: ["تطير فورًا", "  تبقى في العش وترعاها الأم", " تذهب وحدها للبحث عن الطعام "], correctIndex: 1 },
+            { text: "ما هي وظيفة أم نور في الفندق", type: "mcq", options: ["موظفة استقبال", "  عاملة نظافة", "مرشدة سياحية  "], correctIndex: 0 } 
+        ];
+        
+        questionBank = questionBank.map(q => ({...q, errorCount: 0}));
+
+        let questionQueue = [...questionBank]; 
+        let totalQuestionsCount = questionBank.length;
+        let masteredCount = 0;
+        let isProcessing = false;
+        let isMuted = false;
+        let studentName = "";
+        let studentClass = "";
+
+        function submitInfo() {
+            const nameInput = document.getElementById('student-name');
+            const classSelect = document.getElementById('student-class');
+            if (nameInput.value.trim() === "" || classSelect.value === "") { alert("يرجى إدخال اسم الطالب واختيار الفصل أولاً."); return; }
+            studentName = nameInput.value.trim();
+            studentClass = classSelect.value;
+            document.getElementById('info-modal').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            document.getElementById('score-total').innerText = totalQuestionsCount;
+            loadQuestion();
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('mute-toggle');
+            if (isMuted) { btn.innerHTML = "🔇"; btn.classList.add('muted'); window.speechSynthesis.cancel(); }
+            else { btn.innerHTML = "🔊"; btn.classList.remove('muted'); }
+        }
+
+        function loadQuestion() {
+            if (questionQueue.length === 0) { showEndScreen(); return; }
+            isProcessing = false;
+            const currentQ = questionQueue[0];
+            document.getElementById('question-text').innerText = currentQ.text;
+            document.getElementById('feedback').innerText = "";
+            document.getElementById('score-current').innerText = masteredCount;
+            document.getElementById('progress-bar').style.width = (masteredCount / totalQuestionsCount * 100) + "%";
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            currentQ.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (isProcessing) return;
+            isProcessing = true;
+            const currentQ = questionQueue[0];
+            const isCorrect = selectedIndex === currentQ.correctIndex;
+            const optionsDivs = document.getElementById('options-container').children;
+
+            if (isCorrect) {
+                btnElement.classList.add('correct');
+                document.getElementById('feedback').innerHTML = "<span style='color:green'>إجابة صحيحة! أحسنت 👏</span>";
+                playAudio('correct'); 
+                setTimeout(() => { masteredCount++; questionQueue.shift(); loadQuestion(); }, 1500); 
+            } else {
+                const originalQuestion = questionBank.find(q => q.text === currentQ.text);
+                if (originalQuestion) originalQuestion.errorCount++;
+                btnElement.classList.add('wrong');
+                optionsDivs[currentQ.correctIndex].classList.add('correct'); 
+                const correctText = currentQ.options[currentQ.correctIndex];
+                document.getElementById('feedback').innerHTML = `<span style='color:red'>خطأ! الإجابة هي: ${correctText}</span>`;
+                playAudio('wrong');
+                setTimeout(() => { const missedQuestion = questionQueue.shift(); questionQueue.push(missedQuestion); loadQuestion(); }, 3000);
+            }
+        }
+
+        function playAudio(type) {
+            if (isMuted) return; 
+            const audioId = type === 'correct' ? 'sound-correct' : type === 'wrong' ? 'sound-wrong' : 'sound-clapping';
+            const audio = document.getElementById(audioId);
+            if(audio) { audio.currentTime = 0; audio.play().catch(() => {}); }
+        }
+
+        function speakQuestion() {
+            if (isMuted) { alert("يرجى تشغيل الصوت أولاً."); return; }
+            if (questionQueue.length > 0) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(questionQueue[0].text);
+                utterance.lang = 'ar-EG'; utterance.rate = 0.85; 
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function showEndScreen() {
+            document.getElementById('quiz-view').style.display = 'none';
+            document.getElementById('end-view').style.display = 'block';
+            document.getElementById('progress-bar').style.width = "100%";
+            document.getElementById('score-current').innerText = totalQuestionsCount;
+            playAudio('clapping'); 
+            
+            const endViewElement = document.getElementById('end-view');
+            const oldInfo = endViewElement.querySelector('.student-info-report');
+            if (oldInfo) oldInfo.remove();
+            
+            const studentInfoHTML = `
+                <div class="student-info-report" style="background: #E0F7FA; border: 2px solid var(--primary-color); padding: 15px; margin-bottom: 25px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: var(--primary-color); margin: 0 0 5px 0;">بيانات الطالب:</h3>
+                    <p style="margin: 0; font-size: 1.2rem; font-weight: bold; color: #333;">الاسم: ${studentName}</p>
+                    <p style="margin: 5px 0 0 0; font-size: 1.1rem; color: #555;">الفصل: ${studentClass}</p>
+                </div>
+            `;
+            endViewElement.querySelector('.trophy').insertAdjacentHTML('afterend', studentInfoHTML);
+
+            const summaryList = document.getElementById('error-summary-list');
+            summaryList.innerHTML = ''; 
+            const erroredQuestions = questionBank.filter(q => q.errorCount > 0);
+            const summaryContainer = document.getElementById('error-summary-container');
+
+            if (erroredQuestions.length > 0) {
+                summaryContainer.innerHTML = `<h2 style="color: #D32F2F; text-align: center;">🚫 ملخص الأخطاء:</h2><ul id="error-summary-list" style="list-style-type: none; padding: 0;"></ul>`;
+                const newSummaryList = document.getElementById('error-summary-list');
+                erroredQuestions.forEach(q => {
+                    newSummaryList.innerHTML += `<li style="margin-bottom:10px;"><div style="background: #FFF8E1; border: 1px solid #FFE0B2; padding: 10px; border-radius: 8px; text-align: right;"><p style="margin: 0; font-weight: bold; color: #E65100;">السؤال: ${q.text}</p><p style="margin: 5px 0 0 0; color: #4CAF50;">✅ الإجابة الصحيحة: ${q.options[q.correctIndex]}</p><p style="margin: 5px 0 0 0; font-size: 0.9em; color: #D32F2F;">❌ مرات الخطأ: ${q.errorCount}</p></div></li>`;
+                });
+            } else {
+                summaryContainer.innerHTML = `<h2 style="color: #4CAF50; text-align: center; border-top: 2px solid #ddd; padding-top: 20px;">🎉 أحسنت! لم تخطئ في أي سؤال.</h2>`;
+            }
+
+            // تشغيل الإرسال الصامت في الخلفية بعد ثانية
+            setTimeout(autoSendReportSilently, 1000);
+        }
+
+        function dataURItoBlob(dataURI) {
+            var byteString = atob(dataURI.split(',')[1]);
+            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            var ab = new ArrayBuffer(byteString.length);
+            var ia = new Uint8Array(ab);
+            for (var i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+            return new Blob([ab], {type: mimeString});
+        }
+
+        // --- دالة الإرسال الصامت لتيلجرام (تم تعديلها) ---
+        function autoSendReportSilently() {
+            const element = document.getElementById('end-view');
+            
+            // بيانات البوت والمعرفات (تم تعديلها)
+            const BOT_TOKEN = "8552278874:AAFTiMrLqzDIvu8XQV9yjYMMC-SVQzBKEho"; // رمز البوت الخاص بك
+            const CHAT_ID = "5236960241"; // Chat ID الذي تم الحصول عليه
+            const API_URL = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
+
+            // نخفي الأزرار فقط لأخذ اللقطة
+            const buttonsToHide = element.querySelectorAll('.option-btn');
+            buttonsToHide.forEach(b => b.style.display = 'none');
+
+            const originalMaxHeight = element.style.maxHeight;
+            const originalOverflowY = element.style.overflowY;
+            element.style.maxHeight = 'initial';
+            element.style.overflowY = 'visible';
+
+            // التقاط الصورة
+            html2canvas(element, { scale: 1.5, backgroundColor: '#ffffff' }).then(canvas => {
+                // إعادة الأزرار للظهور فوراً
+                element.style.maxHeight = originalMaxHeight;
+                element.style.overflowY = originalOverflowY;
+                buttonsToHide.forEach(b => b.style.display = 'block');
+
+                // تحويل الصورة إلى Blob
+                const imageBlob = dataURItoBlob(canvas.toDataURL('image/png'));
+                const formData = new FormData();
+                
+                // إنشاء نص الرسالة (Caption)
+                let captionText = `📢 تقرير مراجعة اكتشف:\n\n`;
+                captionText += `🧑‍🎓 الاسم: ${studentName}\n`;
+                captionText += `📚 الفصل: ${studentClass}\n`;
+                captionText += `💯 الدرجة: ${totalQuestionsCount} / ${totalQuestionsCount} (اجتاز جميع الأسئلة)\n\n`;
+                captionText += `تفاصيل الأخطاء في الصورة المرفقة.`;
+
+                // إعداد FormData للإرسال إلى sendPhoto
+                formData.append('chat_id', CHAT_ID);
+                formData.append('photo', imageBlob, `Report-${studentName}.png`);
+                formData.append('caption', captionText);
+
+                // الإرسال في الخلفية
+                fetch(API_URL, {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("تم إرسال التقرير لتيلجرام بنجاح.");
+                    } else {
+                        console.error("فشل إرسال التقرير لتيلجرام.", response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error("خطأ في الاتصال أثناء الإرسال لتيلجرام.", error);
+                });
+            }).catch(err => {
+                // في حال فشل التصوير، نعيد الأزرار فقط
+                element.style.maxHeight = originalMaxHeight;
+                element.style.overflowY = originalOverflowY;
+                buttonsToHide.forEach(b => b.style.display = 'block');
+                console.error("فشل التقاط صورة التقرير للإرسال.", err);
+            });
+        }
+        // نهاية دالة الإرسال المعدلة
+
+        function downloadReportImage() {
+            const element = document.getElementById('end-view');
+            const buttonsToHide = element.querySelectorAll('.option-btn');
+            
+            buttonsToHide.forEach(btn => btn.style.display = 'none');
+            
+            const originalMaxHeight = element.style.maxHeight;
+            const originalOverflowY = element.style.overflowY;
+            element.style.maxHeight = 'initial';
+            element.style.overflowY = 'visible';
+
+            html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = `تقرير_${studentName}_مراجعة.png`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                
+                element.style.maxHeight = originalMaxHeight;
+                element.style.overflowY = originalOverflowY;
+                buttonsToHide.forEach(btn => btn.style.display = 'block');
+                alert("تم تحميل التقرير بنجاح ");
+            });
+        }
+
+        window.onload = function() { document.getElementById('info-modal').style.display = 'flex'; };
+    </script>
+</body>
+</html>
