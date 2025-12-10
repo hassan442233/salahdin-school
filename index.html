@@ -178,8 +178,8 @@
 
     <script>
         // إعدادات الأسئلة
-let questionBank = [
-            { text: "تطير الطيور الصغيرة فور خروجها من البيض.", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
+        let questionBank = [
+{ text: "تطير الطيور الصغيرة فور خروجها من البيض.", type: "tf", options: ["صح", "خطأ"], correctIndex: 1 },
             { text: "ما أفضل تصرف إذا اختلفت مع زميلك", type: "mcq", options: ["اضربه", "اصرخ في وجهه", "احاول التفاهم معه"], correctIndex: 2 },
             { text: "أي مهنة تحتاج إلى معرفة كبيرة بالحاسب الآلي", type: "mcq", options: ["الفلاح", "مهندس تكنولوجيا معلومات", "عامل البناء"], correctIndex: 1 },
             { text: "تريد نور لعب كرة القدم لمدة 30 دقيقة ثم قفز الحبل لمدة 5 دقائق ، فما عدد الدقائق التي تحتاجها نور للعب", type: "mcq", options: ["5", "35", " 30"], correctIndex: 1 },
@@ -206,7 +206,8 @@ let questionBank = [
             { text: "ماذا يحدث لصغار الطيور بعد خروجها من البيض", type: "mcq", options: ["تطير فورًا", "  تبقى في العش وترعاها الأم", " تذهب وحدها للبحث عن الطعام "], correctIndex: 1 },
             { text: "ما هي وظيفة أم نور في الفندق", type: "mcq", options: ["موظفة استقبال", "  عاملة نظافة", "مرشدة سياحية  "], correctIndex: 0 } 
         ];
-                questionBank = questionBank.map(q => ({...q, errorCount: 0}));
+        
+        questionBank = questionBank.map(q => ({...q, errorCount: 0}));
 
         let questionQueue = [...questionBank]; 
         let totalQuestionsCount = questionBank.length;
